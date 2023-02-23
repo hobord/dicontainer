@@ -35,7 +35,7 @@ func main() {
         panic(err)
     }
 
-    // Use the dal.Reader interface.
+    // Use the dal.Reader instance.
     reader.Read()
 }
 ```
@@ -79,7 +79,7 @@ func main() {
         panic(err)
     }
 
-    // Use the dal.Reader interface.
+    // Use the dal.Reader instance.
     reader.Read()
 }
 
