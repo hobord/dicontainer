@@ -9,11 +9,11 @@ func init() {
 	// Register the factory function for the dal.Reader interface.
 	// The factory function will be called once when the dal.Reader interface is resolved.
 	err := gdic.AddFactory(gdic.Defalult, func() (Reader, error) {
-        // if reader needs some dependencies, you can resolve them here.
-        dependency, err := gdic.Resolve[dep.Other](gdic.Defalult)
-        if err != nil {
-            return nil, err
-        }
+        	// if reader needs some dependencies, you can resolve them here.
+		dependency, err := gdic.Resolve[dep.Other](gdic.Defalult)
+		if err != nil {
+		    return nil, err
+		}
 
 		return NewReader(dependency), nil
 	})
@@ -57,7 +57,7 @@ func init() {
         // if reader needs some dependencies, you can resolve them here.
         dependency, err := gdic.Resolve[dep.Other](gdic.Defalult)
         if err != nil {
-            return nil, err
+        	return nil, err
         }
 
         return NewReader(dependency), nil
