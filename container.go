@@ -11,7 +11,7 @@ type difactory func() (interface{}, error)
 type InstanceName string
 
 const (
-	Defalult InstanceName = "default"
+	Default InstanceName = "default"
 	// you can define more instance name in Your project
 )
 

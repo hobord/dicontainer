@@ -10,19 +10,19 @@ import (
 func init() {
 	// Register the factory function for the service1.Service2 interface.
 	// The factory function will be called once when the service2.Service2 interface is resolved.
-	err := gdic.AddFactory(gdic.Defalult, func() (Service2, error) {
+	err := gdic.AddFactory(gdic.Default, func() (Service2, error) {
 		var (
 			err  error
 			srv1 service1.Service1
 			d2   dal2.Dal2
 		)
 
-		srv1, err = gdic.Resolve[service1.Service1](gdic.Defalult)
+		srv1, err = gdic.Resolve[service1.Service1](gdic.Default)
 		if err != nil {
 			return nil, err
 		}
 
-		d2, err = gdic.Resolve[dal2.Dal2](gdic.Defalult)
+		d2, err = gdic.Resolve[dal2.Dal2](gdic.Default)
 		if err != nil {
 			return nil, err
 		}
