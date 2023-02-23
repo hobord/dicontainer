@@ -13,7 +13,7 @@ func main() {
 	// with 'gdic.Defalult' You will get the default instance of the interface,
 	// but you can also get a named instance of the interface by passing the name of the instance.
 	// but then you will need to register the factory function with the same name.
-	srv2, err := gdic.Resolve[service2.Service2](gdic.Defalult)
+	srv2, err := gdic.Resolve[service2.Service2](gdic.Default)
 	if err != nil {
 		panic(err)
 	}

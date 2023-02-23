@@ -16,7 +16,7 @@ func Test_race(t *testing.T) {
 		go func() {
 			defer wg.Done()
 
-			srv2, err := gdic.Resolve[service2.Service2](gdic.Defalult)
+			srv2, err := gdic.Resolve[service2.Service2](gdic.Default)
 			if err != nil {
 				panic(err)
 			}
