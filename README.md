@@ -12,7 +12,7 @@ func init() {
         // if reader needs some dependencies, you can resolve them here.
         dependency, err := gdic.Resolve[dep.Other](gdic.Defalult)
         if err != nil {
-        return nil, err
+            return nil, err
         }
 
 		return NewReader(dependency), nil
@@ -57,7 +57,7 @@ func init() {
         // if reader needs some dependencies, you can resolve them here.
         dependency, err := gdic.Resolve[dep.Other](gdic.Defalult)
         if err != nil {
-        return nil, err
+            return nil, err
         }
 
         return NewReader(dependency), nil
