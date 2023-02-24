@@ -98,7 +98,7 @@ func IsFactoryExist[T any](name InstanceName) bool {
 	return ok
 }
 
-func ConverFactoryOptions[T any](opts ...interface{}) []T {
+func ConvertFactoryOptions[T any](opts ...interface{}) []T {
 	fopts := make([]T, len(opts))
 
 	for i, opt := range opts {
