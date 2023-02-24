@@ -7,7 +7,7 @@ type dal1 struct {
 }
 
 func (d *dal1) DoSomething() string {
-	fmt.Printf("dal1.DoSomething() with text: %s", d.text)
+	fmt.Printf("dal1.DoSomething() with text: %s\n", d.text)
 
 	return "dal1.DoSomething()"
 }

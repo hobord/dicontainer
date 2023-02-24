@@ -22,7 +22,7 @@ func init() {
 			return nil, err
 		}
 
-		d2, err = gdic.Resolve[dal2.Dal2](gdic.Default)
+		d2, err = gdic.Resolve[dal2.Dal2](gdic.Default, gdic.ResolveWithNoSingleton(), gdic.WithFactoryOptions(dal2.WithText("test 2")))
 		if err != nil {
 			return nil, err
 		}
