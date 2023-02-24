@@ -2,12 +2,40 @@ package gdic
 
 import "reflect"
 
+type ResolveOption func(*resolveOptions)
+
+type resolveOptions struct {
+	// IsSingleton is a flag for singleton instance
+	IsSingleton bool // default: true
+}
+
+func ResolveWithNoSingleton() ResolveOption {
+	return func(o *resolveOptions) {
+		o.IsSingleton = false
+	}
+}
+
 // Resolve returns instance from the container
 // if instance is not exist then it creates it by the factory
-func Resolve[T any](name InstanceName) (T, error) {
+func Resolve[T any](name InstanceName, options ...ResolveOption) (T, error) {
+	opts := resolveOptions{
+		IsSingleton: true,
+	}
+
+	for _, opt := range options {
+		opt(&opts)
+	}
+
+	if opts.IsSingleton {
+		return resolveSingleton[T](name, options)
+	}
+
+	return resolve[T](name, options)
+}
+
+func resolveSingleton[T any](name InstanceName, options []ResolveOption) (T, error) {
 	var (
-		instance T
-		err      error
+		err error
 	)
 
 	// get type of the interface
@@ -26,25 +54,39 @@ func Resolve[T any](name InstanceName) (T, error) {
 	store.Lck.RUnlock()
 
 	if !ok {
-		// if missing then try to get factory
-		store.Lck.RLock()
-		factory, ok := store.factories[itype][name]
-		store.Lck.RUnlock()
-
-		if !ok {
-			return instance, ErrFactoryNotFound
-		}
-
-		// create instance
-		resolvedInstance, err = factory()
-		if err != nil {
-			return instance, err
-		}
+		resolvedInstance, err = resolve[T](name, options)
 
 		// store instance in the container
 		store.Lck.Lock()
 		store.instances[itype][name] = resolvedInstance
 		store.Lck.Unlock()
+	}
+
+	return resolvedInstance.(T), err
+}
+
+func resolve[T any](name InstanceName, options []ResolveOption) (T, error) {
+	var (
+		instance T
+		err      error
+	)
+
+	// get type of the interface
+	itype := GetType[T]()
+
+	// get factory from the container
+	store.Lck.RLock()
+	factory, ok := store.factories[itype][name]
+	store.Lck.RUnlock()
+
+	if !ok {
+		return instance, ErrFactoryNotFound
+	}
+
+	// create instance
+	resolvedInstance, err := factory()
+	if err != nil {
+		return instance, err
 	}
 
 	return resolvedInstance.(T), err
