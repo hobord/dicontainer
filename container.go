@@ -4,9 +4,6 @@ import (
 	"sync"
 )
 
-// difactory is a function that builds the object instance
-type difactory func() (interface{}, error)
-
 // InstanceName is a name of instance for store in the container
 type InstanceName string
 

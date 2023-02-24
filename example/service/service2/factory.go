@@ -10,7 +10,7 @@ import (
 func init() {
 	// Register the factory function for the service1.Service2 interface.
 	// The factory function will be called once when the service2.Service2 interface is resolved.
-	err := gdic.AddFactory(gdic.Default, func() (Service2, error) {
+	err := gdic.AddFactory(gdic.Default, func(opts ...interface{}) (Service2, error) {
 		var (
 			err  error
 			srv1 service1.Service1

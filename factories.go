@@ -1,6 +1,9 @@
 package gdic
 
-func AddFactory[T any](name InstanceName, factory func() (T, error)) error {
+// difactory is a function that builds the object instance
+type difactory func(opts ...interface{}) (interface{}, error)
+
+func AddFactory[T any](name InstanceName, factory func(opts ...interface{}) (T, error)) error {
 	// get type of the interface
 	itype := GetType[T]()
 
@@ -24,15 +27,15 @@ func AddFactory[T any](name InstanceName, factory func() (T, error)) error {
 	}
 
 	// add factory to the container
-	store.factories[itype][name] = func() (interface{}, error) {
-		return factory()
+	store.factories[itype][name] = func(opts ...interface{}) (interface{}, error) {
+		return factory(opts...)
 	}
 
 	return nil
 }
 
 // ReplaceFactory replaces factory in the container
-func ReplaceFactory[T any](name InstanceName, factory func() (T, error)) error {
+func ReplaceFactory[T any](name InstanceName, factory func(opts ...interface{}) (T, error)) error {
 	// get type of the interface
 	itype := GetType[T]()
 
@@ -51,8 +54,8 @@ func ReplaceFactory[T any](name InstanceName, factory func() (T, error)) error {
 	}
 
 	// add factory to the container
-	store.factories[itype][name] = func() (interface{}, error) {
-		return factory()
+	store.factories[itype][name] = func(opts ...interface{}) (interface{}, error) {
+		return factory(opts...)
 	}
 
 	return nil
@@ -93,4 +96,14 @@ func IsFactoryExist[T any](name InstanceName) bool {
 	_, ok := store.factories[itype][name]
 
 	return ok
+}
+
+func ConverFactoryOptions[T any](opts ...interface{}) []T {
+	fopts := make([]T, len(opts))
+
+	for i, opt := range opts {
+		fopts[i] = opt.(T)
+	}
+
+	return fopts
 }
