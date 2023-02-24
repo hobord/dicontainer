@@ -6,12 +6,19 @@ type ResolveOption func(*resolveOptions)
 
 type resolveOptions struct {
 	// IsSingleton is a flag for singleton instance
-	IsSingleton bool // default: true
+	IsSingleton    bool // default: true
+	FactoryOptions []interface{}
 }
 
 func ResolveWithNoSingleton() ResolveOption {
 	return func(o *resolveOptions) {
 		o.IsSingleton = false
+	}
+}
+
+func WithFactoryOptions(opts ...interface{}) ResolveOption {
+	return func(o *resolveOptions) {
+		o.FactoryOptions = opts
 	}
 }
 
@@ -27,13 +34,13 @@ func Resolve[T any](name InstanceName, options ...ResolveOption) (T, error) {
 	}
 
 	if opts.IsSingleton {
-		return resolveSingleton[T](name, options)
+		return resolveSingleton[T](name, opts)
 	}
 
-	return resolve[T](name, options)
+	return resolve[T](name, opts)
 }
 
-func resolveSingleton[T any](name InstanceName, options []ResolveOption) (T, error) {
+func resolveSingleton[T any](name InstanceName, options resolveOptions) (T, error) {
 	var (
 		err error
 	)
@@ -65,7 +72,7 @@ func resolveSingleton[T any](name InstanceName, options []ResolveOption) (T, err
 	return resolvedInstance.(T), err
 }
 
-func resolve[T any](name InstanceName, options []ResolveOption) (T, error) {
+func resolve[T any](name InstanceName, options resolveOptions) (T, error) {
 	var (
 		instance T
 		err      error
@@ -84,7 +91,7 @@ func resolve[T any](name InstanceName, options []ResolveOption) (T, error) {
 	}
 
 	// create instance
-	resolvedInstance, err := factory()
+	resolvedInstance, err := factory(options.FactoryOptions...)
 	if err != nil {
 		return instance, err
 	}

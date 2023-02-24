@@ -3,10 +3,11 @@ package dal1
 import "fmt"
 
 type dal1 struct {
+	text string
 }
 
 func (d *dal1) DoSomething() string {
-	fmt.Println("dal1.DoSomething()")
+	fmt.Printf("dal1.DoSomething() with text: %s", d.text)
 
 	return "dal1.DoSomething()"
 }
