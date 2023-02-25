@@ -10,33 +10,38 @@ type resolveOptions struct {
 	FactoryOptions []interface{}
 }
 
+// ResolveWithNoSingleton is a resolve option for resolve instance without singleton
 func ResolveWithNoSingleton() ResolveOption {
 	return func(o *resolveOptions) {
 		o.IsSingleton = false
 	}
 }
 
+// WithFactoryOptions is a resolve option for resolve instance with factory options
 func WithFactoryOptions(opts ...interface{}) ResolveOption {
 	return func(o *resolveOptions) {
 		o.FactoryOptions = opts
 	}
 }
 
-// Resolve returns instance from the container
-// if instance is not exist then it creates it by the factory
+// Resolve returns instance of the interface
 func Resolve[T any](name InstanceName, options ...ResolveOption) (T, error) {
+	// set default options
 	opts := resolveOptions{
 		IsSingleton: true,
 	}
 
+	// apply options
 	for _, opt := range options {
 		opt(&opts)
 	}
 
+	// if options IsSingleton is true, try to get instance from the container
 	if opts.IsSingleton {
 		return resolveSingleton[T](name, opts)
 	}
 
+	// if options IsSingleton false, resolve instance
 	return resolve[T](name, opts)
 }
 
@@ -62,6 +67,9 @@ func resolveSingleton[T any](name InstanceName, options resolveOptions) (T, erro
 
 	if !ok {
 		resolvedInstance, err = resolve[T](name, options)
+		if err != nil {
+			return resolvedInstance.(T), err
+		}
 
 		// store instance in the container
 		store.Lck.Lock()
@@ -69,7 +77,7 @@ func resolveSingleton[T any](name InstanceName, options resolveOptions) (T, erro
 		store.Lck.Unlock()
 	}
 
-	return resolvedInstance.(T), err
+	return resolvedInstance.(T), nil
 }
 
 func resolve[T any](name InstanceName, options resolveOptions) (T, error) {
@@ -104,9 +112,10 @@ func IsInstanceExist[T any](name InstanceName) bool {
 	// get type of the interface
 	itype := GetType[T]()
 
-	// check if type is exist in the container
+	// lock the container
 	store.Lck.RLock()
 	defer store.Lck.RUnlock()
+	// check if type is exist in the container
 
 	if _, ok := store.instances[itype]; !ok {
 		return false
@@ -123,6 +132,7 @@ func AddInstance[T any](name InstanceName, instance T) error {
 	// get type of the interface
 	itype := GetType[T]()
 
+	// lock the container
 	store.Lck.Lock()
 	defer store.Lck.Unlock()
 
@@ -132,7 +142,6 @@ func AddInstance[T any](name InstanceName, instance T) error {
 	}
 
 	// check if instance is exist
-
 	if _, ok := store.instances[itype][name]; ok {
 		return ErrInstanceExist
 	}
@@ -148,6 +157,7 @@ func ReplaceInstance[T any](name InstanceName, instance T) {
 	// get type of the interface
 	itype := GetType[T]()
 
+	// lock the container
 	store.Lck.Lock()
 	defer store.Lck.Unlock()
 
@@ -165,6 +175,7 @@ func DeleteInstance[T any](name InstanceName) {
 	// get type of the interface
 	itype := GetType[T]()
 
+	// lock the container
 	store.Lck.Lock()
 	defer store.Lck.Unlock()
 
@@ -177,7 +188,7 @@ func DeleteInstance[T any](name InstanceName) {
 	delete(store.instances[itype], name)
 }
 
-// GetType returns the T instance full name (package name + type name)
+// GetType returns the T full name (package name + type name)
 func GetType[T any]() string {
 	instanceType := reflect.TypeOf((*T)(nil)).Elem()
 	itype := instanceType.PkgPath() + "." + instanceType.Name()

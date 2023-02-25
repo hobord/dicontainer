@@ -17,6 +17,7 @@ var store container
 
 // container is store instances and factories
 type container struct {
+	// Lck is a mutex for locking the container
 	Lck sync.RWMutex
 
 	// instances is storage for the created instances

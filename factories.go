@@ -1,8 +1,11 @@
 package gdic
 
 // difactory is a function that builds the object instance
+// you can pass options to the factory function
 type difactory func(opts ...interface{}) (interface{}, error)
 
+// AddFactory adds factory to the container
+// if factory is exist then return error
 func AddFactory[T any](name InstanceName, factory func(opts ...interface{}) (T, error)) error {
 	// get type of the interface
 	itype := GetType[T]()
@@ -35,6 +38,7 @@ func AddFactory[T any](name InstanceName, factory func(opts ...interface{}) (T, 
 }
 
 // ReplaceFactory replaces factory in the container
+// if factory is not exist then add it
 func ReplaceFactory[T any](name InstanceName, factory func(opts ...interface{}) (T, error)) error {
 	// get type of the interface
 	itype := GetType[T]()
@@ -98,6 +102,7 @@ func IsFactoryExist[T any](name InstanceName) bool {
 	return ok
 }
 
+// ConvertFactoryOptions converts options to the factory options
 func ConvertFactoryOptions[T any](opts ...interface{}) []T {
 	fopts := make([]T, len(opts))
 
