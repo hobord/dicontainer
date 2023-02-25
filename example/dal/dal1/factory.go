@@ -8,7 +8,7 @@ func init() {
 	// Register the factory function for the dal1.Dal1 interface.
 	// The factory function will be called once when the dal1.Dal1 interface is resolved.
 	err := gdic.AddFactory(gdic.Default, func(opts ...interface{}) (Dal1, error) {
-		return NewDal1(gdic.ConvertFactoryOptions[Option](opts...)...), nil
+		return NewDal1(gdic.ConvertFactoryOptions[Option](opts)...), nil
 	})
 
 	if err != nil {
